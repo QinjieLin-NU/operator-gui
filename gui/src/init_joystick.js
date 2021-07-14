@@ -41,10 +41,10 @@ cmd_vel_listener = new ROSLIB.Topic({
       var options = {
         zone: document.getElementById('zone_joystick'),
         threshold: 0.1,
-        position: { left: 520+'pt', top: 400+'pt' },
+        // position: { left: 520+'pt', top: 400+'pt' },
         mode: 'static',
         size: 150,
-        color: 'DeepSkyBlue',
+        color: 'DodgerBlue',
       };
         manager = nipplejs.create(options);
 

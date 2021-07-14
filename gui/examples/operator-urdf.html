@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-
+<link rel="stylesheet" href="operator_style.css">
 <!-- <script src="http://static.robotwebtools.org/threejs/current/three.min.js"></script>
 <script src="http://static.robotwebtools.org/threejs/current/ColladaLoader.min.js"></script>
 <script src="http://static.robotwebtools.org/ColladaAnimationCompress/current/ColladaLoader2.min.js"></script>
@@ -54,7 +54,12 @@
     });
 
     // Add a grid.
-    // viewer.addObject(new ROS3D.Grid());
+    viewer.addObject(new ROS3D.Grid({
+      num_cells: 20,
+      lineWidth: 2,
+      color: '#808080',
+      cellSize: 2,
+    }));
 
     // Setup a client to listen to robot model TFs.
     var tfClient = new ROSLIB.TFClient({
@@ -62,7 +67,7 @@
       angularThres : 0.01,
       transThres : 0.01,
       rate : 10.0,
-      fixedFrame: '/odom'//'/base_footprint'//'/odom'
+      fixedFrame: '/base_link'//'/base_footprint'//'/odom'
     });
 
     // Setup the URDF client.
@@ -89,21 +94,21 @@
         topic: '/scan',
         tfClient: tfClient,
         rootObject: viewer.scene,
-        material: { size: 0.5, color: 0xff00ff }
+        material: { size: 0.4, color: 0x000099 },
+        max_pts: 1000,
     });
 
-    // Setup the global map client.
-    var global_gridClient = new ROS3D.OccupancyGridClient({
-      ros : ros,
-      rootObject : viewer.scene,
-      topic: '/move_base/global_costmap/costmap', //'/map',
-      tfClient: tfClient,
-      color: {r:20,g:20,b:25}
-    });
-    // Scale the canvas to fit to the map
-    global_gridClient.on('change', function(){
-      // viewer.scaleToDimensions(global_gridClient.currentGrid.width, global_gridClient.currentGrid.height);
-    });
+    // // Setup the global map client.
+    // var global_gridClient = new ROS3D.OccupancyGridClient({
+    //   ros : ros,
+    //   rootObject : viewer.scene,
+    //   topic: '/move_base/global_costmap/costmap', //'/map',
+    //   tfClient: tfClient,
+    //   color: {r:250,g:250,b:250}
+    // });
+    // // Scale the canvas to fit to the map
+    // global_gridClient.on('change', function(){
+    // });
 
     // Setup the map client.
     var map_gridClient = new ROS3D.OccupancyGridClient({
@@ -111,11 +116,10 @@
       rootObject : viewer.scene,
       topic: '/map', //'/map',
       tfClient: tfClient,
-      color: {r:20,g:20,b:25}
+      color: {r:250,g:250,b:250}
     });
     // Scale the canvas to fit to the map
     map_gridClient.on('change', function(){
-      // viewer.scaleToDimensions(map_gridClient.currentGrid.width, map_gridClient.currentGrid.height);
     });
 
     //set up navigation panel
@@ -130,14 +134,14 @@
     });
 
     //set up image view
-    var image_topic = new ROSLIB.Topic({
-      ros: ros, name: '/camera/rgb/image_raw/compressed',
-      messageType: 'sensor_msgs/CompressedImage'
-    });
-    image_topic.subscribe(function(message) {
-      document.getElementById('my_image').src = "data:image/jpg;base64," + message.data;
-      // image_topic.unsubscribe();
-    });
+    // var image_topic = new ROSLIB.Topic({
+    //   ros: ros, name: '/camera/rgb/image_raw/compressed',
+    //   messageType: 'sensor_msgs/CompressedImage'
+    // });
+    // image_topic.subscribe(function(message) {
+    //   document.getElementById('my_image').src = "data:image/jpg;base64," + message.data;
+    //   // image_topic.unsubscribe();
+    // });
 
   }
 </script>
@@ -145,11 +149,11 @@
 
 <body>
   <div >
-    <div id="urdf" style="float: left; "></div>
-    <div id="nav_panel" style="" ></div>
+    <div id="urdf" class="urdf-style"></div>
+    <div id="nav_panel"></div>
   </div>
   <div id="zone_joystick" ></div>
-  <img id="my_image" style='height: 160px; width: 200px; object-fit: contain' src="assets/img/placeholder.png">
+  <img id="my_image" class="imageViwer-style" src="http://localhost:8080/stream?topic=/camera/rgb/image_raw">
 
   <script>
     window.onload=function(){

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="operator_style.css">
+<!-- <script src="http://static.robotwebtools.org/threejs/current/three.min.js"></script>
+<script src="http://static.robotwebtools.org/threejs/current/ColladaLoader.min.js"></script>
+<script src="http://static.robotwebtools.org/ColladaAnimationCompress/current/ColladaLoader2.min.js"></script>
+<script src="http://static.robotwebtools.org/threejs/current/STLLoader.min.js"></script>
+<script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+<script src="http://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script> -->
+
+<script src="https://static.robotwebtools.org/threejs/r89/three.min.js"></script>
+<script src="https://static.robotwebtools.org/threejs/r89/ColladaLoader.js"></script>
+<script src="https://static.robotwebtools.org/ros3djs/0.18.0/ColladaLoader.js"></script>
+<script src="https://static.robotwebtools.org/threejs/r89/STLLoader.js"></script>
+<script src="https://static.robotwebtools.org/EventEmitter2/0.4.14/eventemitter2.min.js"></script>
+<script type="text/javascript" src="js/roslib.min.js"></script>    
+<script src="https://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script>
+<script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.7.3/nipplejs.js"></script>
+<script src="src/init_joystick.js"></script>
+
+<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script src="https://static.robotwebtools.org/ros2djs/current/ros2d.min.js"></script> 
+<script src="js/OccupancyGridClientNav.js"></script> 
+<script src="js/Navigator.js"></script> 
+
+<script>
+  /**
+   * Setup all visualization elements when the page is loaded.
+   */
+  function init() {
+    // Connect to ROS.
+    var ros = new ROSLIB.Ros({
+      url : 'ws://localhost:9092'
+    });
+
+    // Create the main viewer.
+    var viewer = new ROS3D.Viewer({
+      divID : 'urdf',
+      width : 400,
+      height : 200,
+      // antialias : true
+    });
+
+    // Create the 2d viewer.
+    var viewer_2d = new ROS2D.Viewer({
+      divID : 'nav_panel',
+      width : 400,
+      height : 200
+    });
+
+    // Add a grid.
+    viewer.addObject(new ROS3D.Grid({
+      num_cells: 20,
+      lineWidth: 2,
+      color: '#808080',
+      cellSize: 2,
+    }));
+
+    // Setup a client to listen to robot model TFs.
+    var tfClient = new ROSLIB.TFClient({
+      ros : ros,
+      angularThres : 0.01,
+      transThres : 0.01,
+      rate : 10.0,
+      fixedFrame: '/base_link'//'/base_footprint'//'/odom'
+    });
+
+    // Setup the URDF client.
+    var urdfClient = new ROS3D.UrdfClient({
+      ros : ros,
+      tfClient : tfClient,
+      path : 'http://localhost:8000/',
+      rootObject : viewer.scene,
+      loader : ROS3D.COLLADA_LOADER_2
+    });
+
+    // Setup the scan client.
+    var scanclient = new ROS3D.LaserScan({
+        ros: ros,
+        topic: '/scan',
+        tfClient: tfClient,
+        rootObject: viewer.scene,
+        material: { size: 0.4, color: 0x000099 },
+        max_pts: 1000,
+    });
+
+
+    // Setup the map client.
+    var map_gridClient = new ROS3D.OccupancyGridClient({
+      ros : ros,
+      rootObject : viewer.scene,
+      topic: '/map', //'/map',
+      tfClient: tfClient,
+      color: {r:250,g:250,b:250}
+    });
+    // Scale the canvas to fit to the map
+    map_gridClient.on('change', function(){
+    });
+
+    //set up navigation panel
+    var nav = NAV2D.OccupancyGridClientNav({
+      ros : ros,
+      rootObject : viewer_2d.scene,
+      viewer : viewer_2d,
+      serverName : '/move_base',
+      actionName : 'move_base_msgs/MoveBaseAction',
+      withOrientation: true ,
+      zoomScale: 0.25,
+    });
+
+  }
+</script>
+</head>
+
+<body>
+  <div>
+    <img id="my_image" class="imageViwer-panel" src="http://localhost:8080/stream?topic=/camera/rgb/image_raw">
+    <div id="urdf" class="urdf-panel"></div>
+    <div id="nav_panel" class="nav-panel"></div>
+    <div id="zone_joystick" class="joystick-panel" ></div>
+  </div>
+  <script>
+    window.onload=function(){
+        init();  // setup the spring simulation
+        createJoystick();  // setup the spring simulation
+    }
+    </script>
+</body>
+</html>
