@@ -21,27 +21,27 @@ cmd_vel_listener = new ROSLIB.Topic({
     messageType : 'geometry_msgs/Twist'
   });
 
-  move = function (linear, angular) {
-    var twist = new ROSLIB.Message({
-      linear: {
-        x: linear,
-        y: 0,
-        z: 0
-      },
-      angular: {
-        x: 0,
-        y: 0,
-        z: angular
-      }
-    });
-    cmd_vel_listener.publish(twist);
-  }
+move = function (linear, angular) {
+  var twist = new ROSLIB.Message({
+    linear: {
+      x: linear,
+      y: 0,
+      z: 0
+    },
+    angular: {
+      x: 0,
+      y: 0,
+      z: angular
+    }
+  });
+  cmd_vel_listener.publish(twist);
+}
 
   createJoystick = function () {
       var options = {
         zone: document.getElementById('zone_joystick'),
         threshold: 0.1,
-        // position: { left: 520+'pt', top: 400+'pt' },
+        position: { left: 520+'pt', top: 400+'pt' },
         mode: 'static',
         size: 150,
         color: 'DodgerBlue',

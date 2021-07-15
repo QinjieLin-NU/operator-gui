@@ -20,8 +20,8 @@
 
 .joystick-panel{
     position:absolute;
-    bottom: 100px;
-    right: 100px;
+    bottom: 150px;
+    right: 150px;
     z-index: 2;
 }
 

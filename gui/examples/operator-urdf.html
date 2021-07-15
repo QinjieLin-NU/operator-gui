@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<link rel="stylesheet" href="operator_style.css">
+<link rel="stylesheet" href="../operator_style.css">
 <!-- <script src="http://static.robotwebtools.org/threejs/current/three.min.js"></script>
 <script src="http://static.robotwebtools.org/threejs/current/ColladaLoader.min.js"></script>
 <script src="http://static.robotwebtools.org/ColladaAnimationCompress/current/ColladaLoader2.min.js"></script>
@@ -17,7 +17,7 @@
 <script src="https://static.robotwebtools.org/threejs/r89/STLLoader.js"></script>
 <script src="https://static.robotwebtools.org/EventEmitter2/0.4.14/eventemitter2.min.js"></script>
 <!-- <script src="https://static.robotwebtools.org/roslibjs/0.20.0/roslib.min.js"></script> -->
-<script type="text/javascript" src="js/roslib.min.js"></script>    
+<script type="text/javascript" src="../js/roslib.min.js"></script>    
 <script src="https://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script>
 <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.7.3/nipplejs.js"></script>
@@ -25,8 +25,8 @@
 
 <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
 <script src="https://static.robotwebtools.org/ros2djs/current/ros2d.min.js"></script> 
-<script src="js/OccupancyGridClientNav.js"></script> 
-<script src="js/Navigator.js"></script> 
+<script src="../js/OccupancyGridClientNav.js"></script> 
+<script src="../src/init_joystick.js"></script> 
 
 <script>
   /**
@@ -35,7 +35,7 @@
   function init() {
     // Connect to ROS.
     var ros = new ROSLIB.Ros({
-      url : 'ws://localhost:9092'
+      url : 'ws://localhost:9090'
     });
 
     // Create the main viewer.
@@ -74,7 +74,7 @@
     var urdfClient = new ROS3D.UrdfClient({
       ros : ros,
       tfClient : tfClient,
-      path : 'http://localhost:8000/',
+      path : 'http://localhost:9094/',
       rootObject : viewer.scene,
       loader : ROS3D.COLLADA_LOADER_2
     });

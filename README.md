@@ -25,8 +25,9 @@ deine your websocker port, cors-server port and web-vedio-server port
 rosrun rosapi rosapi_node
 rosrun rosbridge_server rosbridge_websocket _port:=9090
 rosrun tf2_web_republisher tf2_web_republisher
-python cors_server.py 
-python pose_publisher.py 8081
-rosrun web_video_server web_video_server _port:=8001
+rosrun web_video_server web_video_server _port:=9092
+python cors_server.py  9094
+python pose_publisher.py 
+python -m SimpleHTTPServer 8000
 ```
 

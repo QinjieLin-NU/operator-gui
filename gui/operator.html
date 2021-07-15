@@ -20,7 +20,6 @@
 <script src="https://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script>
 <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.7.3/nipplejs.js"></script>
-<script src="src/init_joystick.js"></script>
 
 <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
 <script src="https://static.robotwebtools.org/ros2djs/current/ros2d.min.js"></script> 
@@ -28,13 +27,51 @@
 <script src="js/Navigator.js"></script> 
 
 <script>
+
+    // set up joystick
+    createJoystick = function () {
+            var options = {
+              zone: document.getElementById('zone_joystick'),
+              threshold: 0.1,
+              position:  { left: 50 + '%' }, // { left: 520+'pt', top: 400+'pt' },
+              mode: 'static',
+              size: 150,
+              color: 'DodgerBlue',
+            };
+              manager = nipplejs.create(options);
+
+              linear_speed = 0;
+              angular_speed = 0;
+
+              self.manager.on('start', function (event, nipple) {
+                  timer = setInterval(function () {
+                      move(linear_speed, angular_speed);
+                  }, 25);
+                  });
+
+              self.manager.on('move', function (event, nipple) {
+                max_linear = 0.2; // m/s
+                max_angular = 0.5; // rad/s
+                max_distance = 75.0; // pixels;
+                linear_speed = Math.sin(nipple.angle.radian) * max_linear * nipple.distance/max_distance;
+                angular_speed = -Math.cos(nipple.angle.radian) * max_angular * nipple.distance/max_distance;
+              });
+
+              self.manager.on('end', function () {
+              if (timer) {
+                  clearInterval(timer);
+              }
+              self.move(0, 0);
+              });
+        }
+
   /**
    * Setup all visualization elements when the page is loaded.
    */
-  function init() {
+  function init(host_ip,ros_port,urdf_port) {
     // Connect to ROS.
     var ros = new ROSLIB.Ros({
-      url : 'ws://localhost:9090'
+      url : 'ws://'+host_ip+':'+ros_port  //'ws://192.168.10.68:9090'
     });
 
     // Create the main viewer.
@@ -73,7 +110,7 @@
     var urdfClient = new ROS3D.UrdfClient({
       ros : ros,
       tfClient : tfClient,
-      path : 'http://localhost:8081/',
+      path : 'http://'+host_ip+':'+urdf_port+'/',
       rootObject : viewer.scene,
       loader : ROS3D.COLLADA_LOADER_2
     });
@@ -112,6 +149,30 @@
       zoomScale: 0.25,
     });
 
+    cmd_vel_listener = new ROSLIB.Topic({
+        ros : ros,
+        name : "/cmd_vel", //"/navigation_velocity_smoother/raw_cmd_vel",
+        messageType : 'geometry_msgs/Twist'
+      });
+
+    move = function (linear, angular) {
+      var twist = new ROSLIB.Message({
+        linear: {
+          x: linear,
+          y: 0,
+          z: 0
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: angular
+        }
+      });
+      cmd_vel_listener.publish(twist);
+    }
+
+    createJoystick()
+
   }
 </script>
 </head>
@@ -125,8 +186,12 @@
   </div>
   <script>
     window.onload=function(){
-        init();  // setup the spring simulation
-        createJoystick();  // setup the spring simulation
+        var host_ip = '192.168.10.68';//'localhost' ;
+        var ros_port= 9090 ;
+        var video_port = 9092 ;
+        var urdf_port = 9094 ;
+        document.getElementById('my_image').src = "http://"+host_ip+":"+video_port+"/stream?topic=/camera/rgb/image_raw";
+        init(host_ip,ros_port,urdf_port);  // setup urdf viewer, navigation
     }
     </script>
 </body>
