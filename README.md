@@ -2,21 +2,31 @@
 web front-end for robot demos: [Youtube Video](https://www.youtube.com/watch?v=ltS5nVfyOWA)
 
 ## Run
-### on local workstation
-``rosrun rosbridge_server rosbridge_websocket _port:=9092``
 
-``rosrun tf2_web_republisher tf2_web_republisher``
+### move related files
 
-``rosrun rosapi rosapi_node``
+```
+cp gui/src/cors_server.py /opt/ros/melodic/share/.
+git clone https://github.com/QinjieLin-NU/web-spot.git
+cp -r web-spot/spot_ros/pot_description /opt/ros/melodic/share/.
+```
 
-``cd /opt/ros/indigo/share`` (first copy demo_web/3d/cors_server.py here)
+### launch spot simulation
 
-``python cors_server.py``
-### ssh on robot
-``rosrun cloud_server pointcloud_downsample``
+```
+roslaunch spot_config gazebo.launch
+roslaunch spot_config  slam.launch rviz:=true
+```
 
-``rosrun topic_tools throttle messages /downsampled_points 1``
-### 2D mapping
-we have a private 2D mapping module running on the robot, but you can choose to use any public ros package for 2D occupancy mapping and modify the web visualization interface accordingly 
-### browser
-open demo_web/3d/progress_demos.html
+### launch web related tools
+
+deine your websocker port, cors-server port and web-vedio-server port  
+```
+rosrun rosapi rosapi_node
+rosrun rosbridge_server rosbridge_websocket _port:=9090
+rosrun tf2_web_republisher tf2_web_republisher
+python cors_server.py 
+python pose_publisher.py 8081
+rosrun web_video_server web_video_server _port:=8001
+```
+

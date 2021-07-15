@@ -34,7 +34,7 @@
   function init() {
     // Connect to ROS.
     var ros = new ROSLIB.Ros({
-      url : 'ws://localhost:9092'
+      url : 'ws://localhost:9090'
     });
 
     // Create the main viewer.
@@ -73,7 +73,7 @@
     var urdfClient = new ROS3D.UrdfClient({
       ros : ros,
       tfClient : tfClient,
-      path : 'http://localhost:8000/',
+      path : 'http://localhost:8081/',
       rootObject : viewer.scene,
       loader : ROS3D.COLLADA_LOADER_2
     });
@@ -118,7 +118,7 @@
 
 <body>
   <div>
-    <img id="my_image" class="imageViwer-panel" src="http://localhost:8080/stream?topic=/camera/rgb/image_raw">
+    <img id="my_image" class="imageViwer-panel" src="http://localhost:8001/stream?topic=/camera/rgb/image_raw">
     <div id="urdf" class="urdf-panel"></div>
     <div id="nav_panel" class="nav-panel"></div>
     <div id="zone_joystick" class="joystick-panel" ></div>
