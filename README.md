@@ -1,5 +1,6 @@
 # demo_web
-web front-end for robot demos: [Youtube Video](https://www.youtube.com/watch?v=ltS5nVfyOWA)
+web front-end for robot demos:  
+<img src="./gui/examples/operator.PNG" width=50% height=50%>
 
 ## Run
 
